@@ -63,7 +63,7 @@ func getSecret() {
 	fmt.Println("not implemented")
 }
 
-func Load() (store, error) {
+func Fetch() (store, error) {
 	ctx := context.TODO()
 
 	cfg, err := config.LoadDefaultConfig(ctx)
@@ -77,9 +77,9 @@ func Load() (store, error) {
 		ssmClient := ssm.NewFromConfig(cfg)
 
 		for _, v := range viper.GetStringSlice("credentials") {
-			result, err := getParam(ssmClient, fmt.Sprintf("%s/%s", viper.GetString("ssm.prefix"), v))
+			result, err := getParam(ssmClient, fmt.Sprintf("%s/%s", viper.GetString("prefix"), v))
 			if err != nil {
-				fmt.Printf("unable to retrieve %v (%v)", p, err)
+				fmt.Printf("unable to retrieve %v (%v)", v, err)
 			}
 			Creds[v] = aws.ToString(result.Parameter.Value)
 		}
