@@ -77,9 +77,9 @@ func main() {
 }
 ```
 
-Of course the idea is not to print things out, but to use the values
-from the retuned map of credentials. `Fetch()` returns a map
-with keys equal to the secret names. Let's see that in action:
+Of course the idea is not to print things out, but to use the returned values.
+`Fetch()` returns a map of credentials with keys equal to the secret names.
+Let's see that in action:
 
 ```yaml
 type: parameter
