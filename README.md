@@ -21,7 +21,7 @@ Parameter Store with many secrets under one prefix:
 type: parameter
 prefix: /foo
 credentials:
-  - FOO_BAR
+  - BAR
   - BAZ_QUX
 ```
 
@@ -40,7 +40,7 @@ Same rules for Secrets Manager, just change `type`:
 type: secret
 prefix: /foo
 credentials:
-  - FOO_BAR
+  - BAR
   - BAZ_QUX
 ```
 
