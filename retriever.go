@@ -13,8 +13,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const DEFAULT_CONFIG = "retriever.yml"
-
 type store map[string]string
 
 var (
@@ -22,19 +20,26 @@ var (
 )
 
 func init() {
+	log.SetFlags(log.Lshortfile)
+
+	viper.SetConfigName("retriever")
 	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+
 	viper.SetEnvPrefix("RTVR")
 	viper.AutomaticEnv()
 
-	cfg := viper.GetString("config")
+	cfg := viper.GetString("conf")
 	if cfg != "" {
 		viper.SetConfigFile(cfg)
-	} else {
-		viper.SetConfigFile(DEFAULT_CONFIG)
 	}
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("ERROR: %v", err)
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			fmt.Println("no retriever config found; using environment")
+		} else {
+			log.Fatalf("ERROR: %v", err)
+		}
 	}
 }
 
