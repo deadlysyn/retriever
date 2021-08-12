@@ -92,29 +92,42 @@ credentials:
 ```
 
 ```go
-// ...
+package main
 
-var (
-        creds = make(map[string]string)
+import (
+    // ...
+
+    "github.com/deadlysyn/retriever"
 )
 
+var (
+    creds = make(map[string]string)
+)
+
+func init() {
+    creds, err := retriever.Fetch()
+    if err != nil {
+        log.Fatalf("deal with it: %v", err)
+    }
+}
+
 func jiraGetClient(ctx context.Context) *http.Client {
-        jiraURL := viper.GetString("jira.url")
+    jiraURL := viper.GetString("jira.url")
 
-        keyDERBlock, _ := pem.Decode([]byte(creds["CONSUMER_SECRET"]))
-        privateKey, _ := x509.ParsePKCS1PrivateKey(keyDERBlock.Bytes)
+    keyDERBlock, _ := pem.Decode([]byte(creds["CONSUMER_SECRET"]))
+    privateKey, _ := x509.ParsePKCS1PrivateKey(keyDERBlock.Bytes)
 
-        config := oauth1.Config{
-                ConsumerKey: creds["CONSUMER_KEY"],
-                // etc...
-        }
+    config := oauth1.Config{
+        ConsumerKey: creds["CONSUMER_KEY"],
+        // etc...
+    }
 
-        tok := &oauth1.Token{
-                Token:       creds["OAUTH_TOKEN"],
-                TokenSecret: creds["OAUTH_TOKEN_SECRET"],
-        }
+    tok := &oauth1.Token{
+        Token:       creds["OAUTH_TOKEN"],
+        TokenSecret: creds["OAUTH_TOKEN_SECRET"],
+    }
 
-        return config.Client(ctx, tok)
+    return config.Client(ctx, tok)
 }
 
 // ...
