@@ -1,5 +1,0 @@
-type: parameter # or 'secret'
-prefix: /foo
-credentials:
-  - FOO_BAR
-  - BAZ_QUX
