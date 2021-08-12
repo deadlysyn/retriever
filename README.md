@@ -111,9 +111,7 @@ func init() {
     }
 }
 
-func jiraGetClient(ctx context.Context) *http.Client {
-    jiraURL := viper.GetString("jira.url")
-
+func getClient(ctx context.Context) *http.Client {
     keyDERBlock, _ := pem.Decode([]byte(creds["CONSUMER_SECRET"]))
     privateKey, _ := x509.ParsePKCS1PrivateKey(keyDERBlock.Bytes)
 
