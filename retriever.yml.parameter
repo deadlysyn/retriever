@@ -1,0 +1,5 @@
+type: parameter
+prefix: /foo
+credentials:
+  - BAR
+  - BAZ_QUX
