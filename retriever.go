@@ -8,11 +8,12 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/spf13/viper"
 )
 
-const DEFAULT_CONFIG = "config.yml"
+const DEFAULT_CONFIG = "retriever.yml"
 
 type store map[string]string
 
@@ -26,32 +27,24 @@ func init() {
 	viper.AutomaticEnv()
 
 	cfg := viper.GetString("config")
-
-	fmt.Printf("DEBUG: %+v\n", cfg)
-
 	if cfg != "" {
 		viper.SetConfigFile(cfg)
 	} else {
 		viper.SetConfigFile(DEFAULT_CONFIG)
 	}
 
-	// c := viper.Get("config")
-	// if c != nil {
-	// 	viper.SetConfigFile(c.(string))
-	// }
-
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("ERROR: %v", err)
 	}
 }
 
-func getParam(c *ssm.Client, p string) (*ssm.GetParameterOutput, error) {
+func getParam(ctx context.Context, c *ssm.Client, p string) (*ssm.GetParameterOutput, error) {
 	i := ssm.GetParameterInput{
 		Name:           aws.String(p),
 		WithDecryption: true,
 	}
 
-	out, err := c.GetParameter(context.TODO(), &i)
+	out, err := c.GetParameter(ctx, &i)
 	if err != nil {
 		return nil, err
 	}
@@ -59,8 +52,17 @@ func getParam(c *ssm.Client, p string) (*ssm.GetParameterOutput, error) {
 	return out, nil
 }
 
-func getSecret() {
-	fmt.Println("not implemented")
+func getSecret(ctx context.Context, c *secretsmanager.Client, p string) (*secretsmanager.GetSecretValueOutput, error) {
+	i := secretsmanager.GetSecretValueInput{
+		SecretId: aws.String(p),
+	}
+
+	out, err := c.GetSecretValue(ctx, &i)
+	if err != nil {
+		return nil, err
+	}
+
+	return out, nil
 }
 
 func Fetch() (store, error) {
@@ -72,19 +74,26 @@ func Fetch() (store, error) {
 		return nil, err
 	}
 
+	p := viper.GetString("prefix")
 	t := strings.ToLower(viper.GetString("type"))
 	if t == "parameter" {
-		ssmClient := ssm.NewFromConfig(cfg)
-
+		client := ssm.NewFromConfig(cfg)
 		for _, v := range viper.GetStringSlice("credentials") {
-			result, err := getParam(ssmClient, fmt.Sprintf("%s/%s", viper.GetString("prefix"), v))
+			res, err := getParam(ctx, client, fmt.Sprintf("%s/%s", p, v))
 			if err != nil {
-				fmt.Printf("unable to retrieve %v (%v)", v, err)
+				log.Fatalf("unable to retrieve %v/%v (%v)", p, v, err)
 			}
-			Creds[v] = aws.ToString(result.Parameter.Value)
+			Creds[v] = aws.ToString(res.Parameter.Value)
 		}
 	} else if t == "secret" {
-		getSecret()
+		client := secretsmanager.NewFromConfig(cfg)
+		for _, v := range viper.GetStringSlice("credentials") {
+			res, err := getSecret(ctx, client, fmt.Sprintf("%s/%s", p, v))
+			if err != nil {
+				log.Fatalf("unable to retrieve %v/%v (%v)", p, v, err)
+			}
+			Creds[v] = aws.ToString(res.SecretString)
+		}
 	} else {
 		log.Fatalf("ERROR: unknown type \"%v\"", t)
 	}
