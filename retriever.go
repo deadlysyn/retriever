@@ -1,3 +1,5 @@
+// Package retriever provides primitives for interacting with
+// AWS Parameter Store and Secrets Manager.
 package retriever
 
 import (
