@@ -36,9 +36,9 @@ func init() {
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			fmt.Println("INFO: no retriever config found; using environment")
+			fmt.Println("INFO: retriever config not found; using environment")
 		} else {
-			log.Fatalf("ERROR: %v", err)
+			log.Fatalf("ERROR: %v", err.Error())
 		}
 	}
 }
@@ -75,8 +75,7 @@ func Fetch() (store, error) {
 
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		fmt.Printf("ERROR: unable to load AWS configuration: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("ERROR: unable to load AWS configuration: %v", err.Error())
 	}
 
 	p := viper.GetString("prefix")
@@ -86,7 +85,7 @@ func Fetch() (store, error) {
 		for _, v := range viper.GetStringSlice("credentials") {
 			res, err := getParam(ctx, client, fmt.Sprintf("%s/%s", p, v))
 			if err != nil {
-				log.Fatalf("ERROR: unable to retrieve %v/%v (%v)", p, v, err)
+				return nil, fmt.Errorf("ERROR: unable to retrieve %v/%v (%v)", p, v, err.Error())
 			}
 			Creds[v] = aws.ToString(res.Parameter.Value)
 		}
@@ -95,12 +94,12 @@ func Fetch() (store, error) {
 		for _, v := range viper.GetStringSlice("credentials") {
 			res, err := getSecret(ctx, client, fmt.Sprintf("%s/%s", p, v))
 			if err != nil {
-				log.Fatalf("ERROR: unable to retrieve %v/%v (%v)", p, v, err)
+				return nil, fmt.Errorf("ERROR: unable to retrieve %v/%v (%v)", p, v, err.Error())
 			}
 			Creds[v] = aws.ToString(res.SecretString)
 		}
 	} else {
-		log.Fatalf("ERROR: unknown secret type \"%v\"", t)
+		return nil, fmt.Errorf("ERROR: unknown secret type \"%v\"", t)
 	}
 
 	return Creds, nil
