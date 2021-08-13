@@ -2,18 +2,17 @@
 
 ![Golden Retriever Puppies](https://raw.githubusercontent.com/deadlysyn/retriever/main/assets/retriever.png "retrievers")
 
-Easily fetch secrets from AWS [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) or [Secrets Manager](https://aws.amazon.com/secrets-manager).
-
-# Why
+Easily fetch secrets from AWS
+[Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html)
+or [Secrets Manager](https://aws.amazon.com/secrets-manager).
 
 After a week where I wrote two CLIs and a small web service that required copying
 and pasting the same secret-fetching boilerplate, I decided to abstract the
 boring details.
 
-# How
+# Usage
 
-You can configure using a YAML file or environment thanks to viper.
-Let's see some examples...
+Configure using a YAML or environment thanks to viper. Some examples...
 
 Parameter Store with many secrets under one prefix:
 
@@ -44,19 +43,19 @@ credentials:
   - BAZ_QUX
 ```
 
-Environment variable names are prefixed with `RTVR_` and have the same keys as the YAML config.
+Environment variables are prefixed with `RTVR_` and have the same keys as YAML.
 
 ```console
-❯ RTVR_TYPE="secret" RTVR_PREFIX="/foo" RTVR_CREDENTIALS="BAR"  aws-vault exec dev --region us-east-2 -- go run main.go
+❯ RTVR_TYPE="secret" RTVR_PREFIX="/foo" RTVR_CREDENTIALS="BAR" aws-vault exec dev -- go run main.go
 INFO: retriever not config found; using environment
 RESULT: map[BAR:{"key1":"value1","key2":"value2"}]%
 
-❯ RTVR_TYPE="parameter" RTVR_CREDENTIALS="foo/BAR QUX" aws-vault exec dev --region us-east-2 -- go run main.go
+❯ RTVR_TYPE="parameter" RTVR_CREDENTIALS="foo/BAR QUX" aws-vault exec dev -- go run main.go
 INFO: retriever not config found; using environment
 RESULT: map[QUX:top secret foo/BAR:baz]%
 ```
 
-This is dead simple, but to dispell any magic test code is just:
+To dispel any magic, test code is just:
 
 ```go
 package main
@@ -77,8 +76,8 @@ func main() {
 }
 ```
 
-Of course the idea is not to print things out, but to use the returned values.
-`Fetch()` returns a map of credentials with keys equal to the secret names.
+Of course the idea is not to print things, but to use returned values.
+`Fetch()` returns a map of credentials with keys equal to secret names.
 Let's see that in action:
 
 ```yaml
