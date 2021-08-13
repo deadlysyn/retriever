@@ -45,6 +45,7 @@ func init() {
 	}
 }
 
+// getParam retrieves the specified secret from Parameter Store.
 func getParam(ctx context.Context, c *ssm.Client, p string) (*ssm.GetParameterOutput, error) {
 	i := ssm.GetParameterInput{
 		Name:           aws.String(p),
@@ -59,6 +60,7 @@ func getParam(ctx context.Context, c *ssm.Client, p string) (*ssm.GetParameterOu
 	return out, nil
 }
 
+// getSecret retrieves the specified secret from Secrets Manager.
 func getSecret(ctx context.Context, c *secretsmanager.Client, p string) (*secretsmanager.GetSecretValueOutput, error) {
 	i := secretsmanager.GetSecretValueInput{
 		SecretId: aws.String(p),
@@ -72,6 +74,9 @@ func getSecret(ctx context.Context, c *secretsmanager.Client, p string) (*secret
 	return out, nil
 }
 
+// Fetch retrieves secrets specified via configuration or environment
+// from Parameter Store or Secrets Manager. It returns map[string]string
+// with secret names as keys.
 func Fetch() (store, error) {
 	ctx := context.TODO()
 
