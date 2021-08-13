@@ -68,7 +68,7 @@ func TestMain(m *testing.M) {
 func TestFetch(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			t.Logf("=== %v: Started", name)
+			t.Logf("%v: Started", name)
 			os.Setenv("RTVR_TYPE", test.Type)
 			if len(test.Prefix) > 0 {
 				os.Setenv("RTVR_PREFIX", test.Prefix)
@@ -78,12 +78,12 @@ func TestFetch(t *testing.T) {
 			os.Setenv("RTVR_CREDENTIALS", test.Credential)
 			res, err := Fetch()
 			if err != nil {
-				t.Errorf("=== %v: %v", name, err.Error())
+				t.Errorf("%v: %v", name, err.Error())
 			} else {
 				if res[test.Credential] == test.Value {
-					t.Logf("=== %v: %v", name, res)
+					t.Logf("%v: %v/%v == %v", name, test.Prefix, test.Credential, test.Value)
 				} else {
-					t.Errorf("=== %v: %v", name, err.Error())
+					t.Errorf("%v: %v", name, err.Error())
 				}
 			}
 		})
