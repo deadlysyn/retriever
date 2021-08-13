@@ -142,6 +142,6 @@ func getClient(ctx context.Context) *http.Client {
 
 On the shoulders of giants.
 
-- [AWS SDK for Go V2](https://aws.github.io/aws-sdk-go-v2/docs/getting-started) :rocket: :sparkles:
-- [spf13/viper](https://github.com/spf13/viper) :sunglasses: :heart_eyes:
+- [AWS SDK for Go V2](https://aws.github.io/aws-sdk-go-v2/docs/getting-started) :rocket: :heart_eyes:
+- [spf13/viper](https://github.com/spf13/viper) :sunglasses: :sparkles:
 - [flashback coding music](https://open.spotify.com/playlist/3Y8Dpo4TuNX0QHDDum45Gg?si=3f616312eabd4024) :notes: :metal:
