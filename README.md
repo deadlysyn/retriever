@@ -48,15 +48,15 @@ Environment variable names are prefixed with `RTVR_` and have the same keys as t
 
 ```console
 ❯ RTVR_TYPE="secret" RTVR_PREFIX="/foo" RTVR_CREDENTIALS="BAR"  aws-vault exec dev --region us-east-2 -- go run main.go
-no retriever config found; using environment
+INFO: retriever not config found; using environment
 RESULT: map[BAR:{"key1":"value1","key2":"value2"}]%
 
 ❯ RTVR_TYPE="parameter" RTVR_CREDENTIALS="foo/BAR QUX" aws-vault exec dev --region us-east-2 -- go run main.go
-no retriever config found; using environment
+INFO: retriever not config found; using environment
 RESULT: map[QUX:top secret foo/BAR:baz]%
 ```
 
-To dispell any magic, that test code is just:
+This is dead simple, but to dispell any magic test code is just:
 
 ```go
 package main
@@ -135,7 +135,7 @@ func getClient(ctx context.Context) *http.Client {
 
 - Secrets Manager versioning
 - Customer managed KMS keys
-- Values other than strings
+- Values other than strings (?)
 - Ideas? Open an issue or PR.
 
 # Thanks
