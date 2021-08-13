@@ -15,12 +15,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-type store map[string]string
-
-var (
-	Creds store = make(map[string]string)
-)
-
 func init() {
 	log.SetFlags(log.Lshortfile)
 
@@ -77,7 +71,8 @@ func getSecret(ctx context.Context, c *secretsmanager.Client, p string) (*secret
 // Fetch retrieves secrets specified via configuration or environment
 // from Parameter Store or Secrets Manager. It returns map[string]string
 // with secret names as keys.
-func Fetch() (store, error) {
+func Fetch() (map[string]string, error) {
+	creds := make(map[string]string)
 	ctx := context.TODO()
 
 	cfg, err := config.LoadDefaultConfig(ctx)
@@ -94,7 +89,7 @@ func Fetch() (store, error) {
 			if err != nil {
 				return nil, fmt.Errorf("ERROR: unable to retrieve %v/%v (%v)", p, v, err.Error())
 			}
-			Creds[v] = aws.ToString(res.Parameter.Value)
+			creds[v] = aws.ToString(res.Parameter.Value)
 		}
 	} else if t == "secret" {
 		client := secretsmanager.NewFromConfig(cfg)
@@ -103,11 +98,11 @@ func Fetch() (store, error) {
 			if err != nil {
 				return nil, fmt.Errorf("ERROR: unable to retrieve %v/%v (%v)", p, v, err.Error())
 			}
-			Creds[v] = aws.ToString(res.SecretString)
+			creds[v] = aws.ToString(res.SecretString)
 		}
 	} else {
 		return nil, fmt.Errorf("ERROR: unknown secret type \"%v\"", t)
 	}
 
-	return Creds, nil
+	return creds, nil
 }
