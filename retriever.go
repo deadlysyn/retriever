@@ -69,8 +69,8 @@ func getSecret(ctx context.Context, c *secretsmanager.Client, p string) (*secret
 }
 
 // Fetch retrieves secrets specified via configuration or environment
-// from Parameter Store or Secrets Manager. It returns map[string]string
-// with secret names as keys.
+// from Parameter Store or Secrets Manager and returns a map with
+// secret names as keys.
 func Fetch() (map[string]string, error) {
 	creds := make(map[string]string)
 	ctx := context.TODO()
