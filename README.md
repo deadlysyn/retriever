@@ -12,7 +12,7 @@ boring details.
 
 # Usage
 
-Configure using a YAML or environment thanks to viper. Some examples...
+Configure using YAML or environment thanks to viper. Some examples...
 
 Parameter Store with many secrets under one prefix:
 
